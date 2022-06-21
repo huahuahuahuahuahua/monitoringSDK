@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>monitorSDK</title>
+</head>
+<body>
+  <div id="container">
+    <div class="content">
+      <input id="errorBtn" type="button" value="点击抛出错误" onclick="errorClick()">
+      <input id="promiseErrorBtn" type="button" value="点击抛出Promise错误" onclick="promiseErrorClick()">
+      <input id="sendSuccessBtn" type="button" value="ajax 请求成功" onclick="sendSuccess()">
+      <input id="sendFailBtn" type="button" value="ajax 请求失败" onclick="sendFail()">
+      <input id="longTaskBtn" type="button" value="longTask 按钮" onclick="longTask()">
+    </div>
+  </div>
+  <script>
+    function errorClick() {
+      console.log("window.someVar.error",window.someVar.error)
+      window.someVar.error = 'error'
+    }
+    function promiseErrorClick() {
+      new Promise(function (resolve, reject) {
+        window.someVar.error = 'error'
+      })
+    }
+  </script>
+  <!-- 资源加载错误示例 -->
+  <!-- <script src="/someError.js"></script> -->
+  <script>
+    function sendSuccess() {
+      let xhr = new XMLHttpRequest
+      xhr.open('GET', '/success', true)
+      xhr.responseType = 'json'
+      xhr.onload = function() {
+        console.log(xhr.response)
+      }
+      xhr.send()
+    }
+    function sendFail() {
+      let xhr = new XMLHttpRequest
+      xhr.open('POST', '/fail', true)
+      xhr.responseType = 'json'
+      xhr.onload = function() {
+        console.log(xhr.response)
+      }
+      xhr.onerror = function(error) {
+        console.log(error)
+      }
+      xhr.send("name=ming")
+    }
+  </script>
+  
+  <script>
+    // dom 解析完成，即使依赖的资源没有完成加载，也会触发这个事件
+    document.addEventListener('DOMContentLoaded', function() {
+      let start = Date.now()
+      while ((Date.now - start) < 1000) {}
+      console.log('dom 解析完成')
+    })
+  </script>
+
+  <script>
+    setTimeout(() => {
+      let content = document.querySelector('.content')
+      let h1 = document.createElement('h1')
+      h1.innerHTML = 'first meaningful content'
+      h1.setAttribute('elementtiming', 'meaningful')
+      content.appendChild(h1)
+    }, 2000)
+  </script>
+
+  <script>
+    function longTask() {
+      let start = Date.now()
+      console.log('longTask start', start)
+      while ((Date.now() - start) < 200 + start) {}
+      console.log('longTask end', Date.now() - start)
+    }  
+  </script>
+</body>
+</html>
